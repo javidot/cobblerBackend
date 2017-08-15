@@ -5,7 +5,7 @@
     var app         = express();
     var path        = require('path');
     var bodyParser  = require('body-parser');
-
+    var cors        = require('cors');
     var mysql       = require('mysql');
     var credentials;
     try{
@@ -22,6 +22,7 @@
 
     // configure app to use bodyParser()
     // this will let us get the data from a POST
+    app.use(cors());
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(bodyParser.json());
 
