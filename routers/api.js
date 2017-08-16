@@ -77,7 +77,7 @@ module.exports = (express, connection) => {
 						userStatusFk,
 						roleFk)
 						VALUES
-						(` + data.id + `, ` + data.ownerFk + `, ` + data.ownerFk + `, now(), null, 3, 3)
+						(` + result.insertId + `, ` + data.ownerFk + `, ` + data.ownerFk + `, now(), null, 3, 3)
 					`
 					, [data], (err, result) => {
 						if(err) {
