@@ -1,6 +1,13 @@
 module.exports = (express, connection) => {
 	var router      = express.Router();
 
+	connection.query('USE ebdb', (err, result) => {
+		if (err) {
+			console.log('Error changing the db. ', err);
+		} else {
+			console.log('db changed to ebdb. ');
+		}
+	});
 	// Router Middleware
 	router.use((req, res, next) => {
 	    // log each request to the console
@@ -14,39 +21,39 @@ module.exports = (express, connection) => {
 	});
 
 	router.get('/', (req, res) => {
-		var sqlDrop = `
-			DROP TABLE IF EXISTS Users;
-		`
-		var query = connection.query(sqlDrop, (err, result) => {
-			if(err) {
-				res.jsonp(err);
-			} else {
-				var sqlCreate = `
-					CREATE TABLE IF NOT EXISTS Users (
-						id INT(11) NOT NULL AUTO_INCREMENT,
-						firstName VARCHAR(45) NOT NULL,
-						lastName VARCHAR(45) NOT NULL,
-						email VARCHAR(45) NOT NULL,
-						password VARCHAR(255) NOT NULL,
-						confirmed TINYINT(4) NOT NULL,
-						accountsFk INT(11) NULL DEFAULT NULL,
-						PRIMARY KEY (id),
-						UNIQUE INDEX id_UNIQUE (id ASC),
-						UNIQUE INDEX Email_UNIQUE (email ASC),
-						UNIQUE INDEX Password_UNIQUE (password ASC),
-						UNIQUE INDEX Accounts_FK_UNIQUE (accountsFk ASC)
-					)
-				`
-				var query = connection.query(sqlCreate, (err, result) => {
-					if(err) {
-						res.jsonp(err);
-					} else {
-						res.jsonp(result);
-					}
-				});
+		// var sqlDrop = `
+		// 	DROP TABLE IF EXISTS Users;
+		// `
+		// var query = connection.query(sqlDrop, (err, result) => {
+		// 	if(err) {
+		// 		res.jsonp(err);
+		// 	} else {
+		// 		var sqlCreate = `
+		// 			CREATE TABLE IF NOT EXISTS Users (
+		// 				id INT(11) NOT NULL AUTO_INCREMENT,
+		// 				firstName VARCHAR(45) NOT NULL,
+		// 				lastName VARCHAR(45) NOT NULL,
+		// 				email VARCHAR(45) NOT NULL,
+		// 				password VARCHAR(255) NOT NULL,
+		// 				confirmed TINYINT(4) NOT NULL,
+		// 				accountsFk INT(11) NULL DEFAULT NULL,
+		// 				PRIMARY KEY (id),
+		// 				UNIQUE INDEX id_UNIQUE (id ASC),
+		// 				UNIQUE INDEX Email_UNIQUE (email ASC),
+		// 				UNIQUE INDEX Password_UNIQUE (password ASC),
+		// 				UNIQUE INDEX Accounts_FK_UNIQUE (accountsFk ASC)
+		// 			)
+		// 		`
+		// 		var query = connection.query(sqlCreate, (err, result) => {
+		// 			if(err) {
+		// 				res.jsonp(err);
+		// 			} else {
+		// 				res.jsonp(result);
+		// 			}
+		// 		});
 
-			}
-		});
+		// 	}
+		// });
 	});
 
 	// COLLECTION APPS ROUTES
