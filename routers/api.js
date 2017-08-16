@@ -15,6 +15,7 @@ module.exports = (express, connection) => {
 
 	router.get('/', (req, res) => {
 		var sql = `
+			DROP TABLE Users;
 			CREATE TABLE IF NOT EXISTS Users (
 				id INT(11) NOT NULL AUTO_INCREMENT,
 				firstName VARCHAR(45) NOT NULL,
@@ -32,16 +33,11 @@ module.exports = (express, connection) => {
 		`
 		var query = connection.query(sql, (err, result) => {
 			if(err) {
-				res.send(err);
+				res.jsonp(err);
 			} else {
-				res.send(result);
+				res.jsonp(result);
 			}
 		});
-
-	    res.jsonp({
-	        name: 'Cobbler-App-Backend API', 
-	        version: '0.0.1',
-	    });
 	});
 
 	// COLLECTION APPS ROUTES
