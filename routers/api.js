@@ -46,7 +46,10 @@ module.exports = (express, connection) => {
 
 	    .get((req, res) => {
 	        var query = connection.query('SELECT * FROM All_Apps', (err, rows, fields) => {
-	            if (err) console.error(err);
+	            if (err) {
+					console.error(err)
+					res.jsonp(err);
+				};
 
 	            res.jsonp(rows);
 	        });
