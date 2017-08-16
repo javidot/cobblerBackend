@@ -1,5 +1,6 @@
 module.exports = (express, connection) => {
 	var router      = express.Router();
+	var newAppId = -1;
 
 	connection.query('USE ebdb', (err, result) => {
 		if (err) {
@@ -58,14 +59,16 @@ module.exports = (express, connection) => {
 
 	// COLLECTION APPS ROUTES
 	router.route('/apps')
-	    .post((req, res) => {
+	    .post((req, response) => {
 	        var data = req.body;
 	        console.log(req.body);
 	        var query = connection.query('INSERT INTO Apps SET ?', [data], (err, result) => {
 	            if(err) {
 	                console.error(err);
-	                res.sendStatus(404);
+	                response.sendStatus(404);
 	            } else {
+					newAppId = result.insertId;
+					console.log('New app id = ', newAppId);
 					var queryAddAppUsers = connection.query(
 					`
 						INSERT INTO App_Users
@@ -79,18 +82,18 @@ module.exports = (express, connection) => {
 						VALUES
 						(` + result.insertId + `, ` + data.ownerFk + `, ` + data.ownerFk + `, now(), null, 3, 3)
 					`
-					, [data], (err, result) => {
+					, [data], (err, res) => {
 						if(err) {
 							console.error(err);
-							res.sendStatus(404);
+							response.sendStatus(404);
 						} else {
-							var getAppQuery = connection.query('SELECT * FROM Apps WHERE id = ?', result.insertId, (err, result) => {
+							var getAppQuery = connection.query('SELECT * FROM Apps WHERE id = ?', newAppId, (err, rows, fields) => {
 								if(err) {
 									console.error(err);
-									res.sendStatus(404);
+									response.sendStatus(404);
 								} else {
-									res.status(201);
-									res.send(result);
+									console.log('New app inserted result: ', rows);
+									response.jsonp(rows);
 								}
 							});
 						}
@@ -139,7 +142,7 @@ module.exports = (express, connection) => {
 
 	    .put((req, res) => {
 	        var data = req.body;
-	        var query = connection.query('UPDATE Apps SET ? WHERE id=?', [data, req.params.id], (err, result) => {
+	        var query = connection.query('UPDATE Apps SET ? WHERE id=?', [data, req.params.id], (err, res) => {
 	            if(err){
 	                console.log(err);
 					res.sendStatus(404);
