@@ -14,6 +14,30 @@ module.exports = (express, connection) => {
 	});
 
 	router.get('/', (req, res) => {
+		var sql = `
+			CREATE TABLE IF NOT EXISTS Users (
+				id INT(11) NOT NULL AUTO_INCREMENT,
+				firstName VARCHAR(45) NOT NULL,
+				lastName VARCHAR(45) NOT NULL,
+				email VARCHAR(45) NOT NULL,
+				password VARCHAR(255) NOT NULL,
+				confirmed TINYINT(4) NOT NULL,
+				accountsFk INT(11) NULL DEFAULT NULL,
+				PRIMARY KEY (id),
+				UNIQUE INDEX id_UNIQUE (id ASC),
+				UNIQUE INDEX Email_UNIQUE (email ASC),
+				UNIQUE INDEX Password_UNIQUE (password ASC),
+				UNIQUE INDEX Accounts_FK_UNIQUE (accountsFk ASC)
+			)
+		`
+		var query = connection.query(sql, (err, result) => {
+			if(err) {
+				res.send(err);
+			} else {
+				res.send(result);
+			}
+		});
+
 	    res.jsonp({
 	        name: 'Cobbler-App-Backend API', 
 	        version: '0.0.1',

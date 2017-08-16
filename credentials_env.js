@@ -1,6 +1,6 @@
 module.exports = {
-    host     : 'cobberdevdbinstance.cnc53j0i9ssi.us-west-2.rds.amazonaws.com',
-    user     : 'cobblerdbuser',
-    password : '123abc$%^',
-    database : 'cobberdevdb'
+  host     : process.env.RDS_HOSTNAME,
+  user     : process.env.RDS_USERNAME,
+  password : process.env.RDS_PASSWORD,
+  port     : process.env.RDS_PORT
 }

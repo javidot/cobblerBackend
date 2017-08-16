@@ -7,6 +7,7 @@
     var bodyParser  = require('body-parser');
     var cors        = require('cors');
     var mysql       = require('mysql');
+    var aws         = require('aws-sdk');
     var credentials;
     try{
         credentials = require('./credentials'); //CREATE THIS FILE YOURSELF
