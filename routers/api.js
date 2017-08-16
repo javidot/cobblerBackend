@@ -45,7 +45,7 @@ module.exports = (express, connection) => {
 	    })
 
 	    .get((req, res) => {
-	        var query = connection.query('SELECT * FROM Apps', (err, rows, fields) => {
+	        var query = connection.query('SELECT * FROM All_Apps', (err, rows, fields) => {
 	            if (err) console.error(err);
 
 	            res.jsonp(rows);
@@ -148,7 +148,7 @@ module.exports = (express, connection) => {
 
 	router.route('/users/:id/getUserApps')
 	    .get((req, res) => {
-	        var query = connection.query('SELECT null as app, addedBy, addedOn, lastVisited, userStatus, role FROM UserAppsData WHERE UserAppsData.userFk = ?', req.params.id, (err, rows, fields) => {
+	        var query = connection.query('SELECT null as app, appFk, addedBy, addedOn, lastVisited, userStatus, role FROM UserAppsData WHERE UserAppsData.userFk = ?', req.params.id, (err, rows, fields) => {
 	            if (err) {
 	                //INVALID
 	                console.error(err);
