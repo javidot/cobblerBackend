@@ -21,14 +21,14 @@ module.exports = (express, connection) => {
 	});
 
 	router.get('/', (req, res) => {
-		// var sqlDrop = `
+		// var sqlDrop = 
 		// 	DROP TABLE IF EXISTS Users;
-		// `
+		// 
 		// var query = connection.query(sqlDrop, (err, result) => {
 		// 	if(err) {
 		// 		res.jsonp(err);
 		// 	} else {
-		// 		var sqlCreate = `
+		// 		var sqlCreate = 
 		// 			CREATE TABLE IF NOT EXISTS Users (
 		// 				id INT(11) NOT NULL AUTO_INCREMENT,
 		// 				firstName VARCHAR(45) NOT NULL,
@@ -43,7 +43,7 @@ module.exports = (express, connection) => {
 		// 				UNIQUE INDEX Password_UNIQUE (password ASC),
 		// 				UNIQUE INDEX Accounts_FK_UNIQUE (accountsFk ASC)
 		// 			)
-		// 		`
+		// 		
 		// 		var query = connection.query(sqlCreate, (err, result) => {
 		// 			if(err) {
 		// 				res.jsonp(err);
@@ -60,24 +60,43 @@ module.exports = (express, connection) => {
 	router.route('/apps')
 	    .post((req, res) => {
 	        var data = req.body;
-	        console.log(req.body)
+	        console.log(req.body);
 	        var query = connection.query('INSERT INTO Apps SET ?', [data], (err, result) => {
 	            if(err) {
 	                console.error(err);
 	                res.sendStatus(404);
 	            } else {
-					var getAppQuery = connection.query('SELECT * FROM Apps WHERE id = ?', result.insertId, (err, result) => {
+					var queryAddAppUsers = connection.query(
+					`
+						INSERT INTO App_Users
+						(appFk,
+						userFk,
+						addedBy,
+						addedOn,
+						lastVisited,
+						userStatusFk,
+						roleFk)
+						VALUES
+						(` + data.id + `, ` + data.ownerFk + `, ` + data.ownerFk + `, now(), null, 3, 3)
+					`
+					, [data], (err, result) => {
 						if(err) {
 							console.error(err);
 							res.sendStatus(404);
 						} else {
-							res.status(201);
-							res.send(result);
+							var getAppQuery = connection.query('SELECT * FROM Apps WHERE id = ?', result.insertId, (err, result) => {
+								if(err) {
+									console.error(err);
+									res.sendStatus(404);
+								} else {
+									res.status(201);
+									res.send(result);
+								}
+							});
 						}
-					});
-	            }
-	        });
-	        console.log(query.sql);
+	            	})
+				}
+			})
 	    })
 
 	    .get((req, res) => {
