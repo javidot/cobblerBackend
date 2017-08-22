@@ -166,6 +166,71 @@ module.exports = (express, connection) => {
 	    });
 	//end route
 
+	router.route('/apps/:id/saveTab/:tabId')
+	    .put((req, res) => {
+			var data = req.body;
+			var tabId = req.params.tabId;
+			var appId = req.params.id;
+			var sql;
+			if (tabId > 0) {
+				sql = 'UPDATE app_forms SET ? WHERE id=?';
+			} else {
+				sql = 
+				`
+					INSERT INTO app_forms
+					(name,
+					description,
+					updatedOn,
+					appFk,
+					formTypeFk,
+					ownerFk,
+					createdOn,
+					formSchema)
+					VALUES
+					(` + data.name + `, 
+					 ` + data.description + `,
+					   now(), 
+					 ` + appId + `,
+					 ` + data.formTypeFk + `,
+					   2,
+					   now(),
+					 ` + data.formSchema + `
+					)
+				`
+
+			}
+	        var query = connection.query(sql, [data, tabId], (err, res) => {
+	            if(err){
+	                console.log(err);
+					res.sendStatus(404);
+	            }else{
+	                res.status(200).jsonp({changedRows:res.changedRows, affectedRows:res.affectedRows}).end();
+	            }
+	        })
+			console.log(query.sql);
+	    });
+	//end route
+
+	router.route('/apps/:id/getAppForms')
+	    .get((req, res) => {
+	        var query = connection.query('SELECT * FROM app_forms_by_id WHERE id = ?', req.params.id, (err, rows, fields) => {
+	            if (err) {
+	                //INVALID
+	                console.error(err);
+	                res.sendStatus(404);
+	            } else {
+	                if(rows.length) {
+	                    res.jsonp(rows);
+	                } else {
+	                    //ID NOT FOUND
+	                    res.jsonp(null);
+	                }
+	            }
+	        });
+	        console.log(query.sql);
+	    })
+	//end route
+	
 	router.route('/users/:id')
 	    .get((req, res) => {
 	        var query = connection.query('SELECT * FROM Users WHERE id = ?', req.params.id, (err, rows, fields) => {

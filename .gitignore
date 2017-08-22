@@ -49,3 +49,5 @@ Thumbs.db
 
 # MySQL Credentials File
 credentials-env.js
+
+.vscode/*
