@@ -166,54 +166,69 @@ module.exports = (express, connection) => {
 	    });
 	//end route
 
-	router.route('/apps/:id/saveTab/:tabId')
-	    .put((req, res) => {
+	router.route('/apps/:id/deleteForm/:tabId')
+		.delete((request, response) => {
+			var tabId = request.params.tabId
+			var query = connection.query('DELETE FROM app_forms WHERE id = ?', [tabId], (err, res) => {
+				console.log(query.sql);
+				if (err) {
+					console.log(err);
+					response.sendStatus(404).jsonp({ commandType: 'error', result: err });
+				} else {
+					response.jsonp({ commandType: 'delete', result: res }).end();
+				}
+			});
+		});
+
+	router.route('/apps/:id/saveForm/:tabId')
+	    .put((req, response) => {
 			var data = req.body;
 			var tabId = req.params.tabId;
 			var appId = req.params.id;
 			var sql;
+			var insertedFormId;
+			var params;
 			if (tabId > 0) {
-				sql = 'UPDATE app_forms SET ? WHERE id=?';
+				sql = 'UPDATE app_forms SET name = ?, updatedOn = now(), formSchema = ? WHERE id=?';
+				params = [data.form.name, JSON.stringify(data.formSchema), data.form.id]
 			} else {
 				sql = 
-				`
-					INSERT INTO app_forms
-					(name,
-					description,
-					updatedOn,
-					appFk,
-					formTypeFk,
-					ownerFk,
-					createdOn,
-					formSchema)
-					VALUES
-					(` + data.name + `, 
-					 ` + data.description + `,
-					   now(), 
-					 ` + appId + `,
-					 ` + data.formTypeFk + `,
-					   2,
-					   now(),
-					 ` + data.formSchema + `
-					)
-				`
-
+				'INSERT INTO app_forms (name, description, updatedOn, appFk, formTypeFk, ownerFk, createdOn) VALUES ("' + data.form.name + '", '
+					+ data.form.description + ',  now(), ' + appId + ', ' + data.form.formTypeFk + ', 2, now())';
+				params = [data, tabId];
 			}
-	        var query = connection.query(sql, [data, tabId], (err, res) => {
+	        var query = connection.query(sql, params, (err, res) => {
+				if (tabId === '0') {
+					insertedFormId = res.insertId;
+				}
+				console.log(query.sql);
 	            if(err){
 	                console.log(err);
-					res.sendStatus(404);
+					response.sendStatus(404);
 	            }else{
-	                res.status(200).jsonp({changedRows:res.changedRows, affectedRows:res.affectedRows}).end();
+					if (data.formSchema) {
+						sql = 'UPDATE app_forms SET formSchema = ? WHERE id = ?';
+						var upQuery = connection.query(sql, [JSON.stringify(data.formSchema), res.insertId], (error, result) => {
+							console.log(upQuery.sql);
+							if (error) {
+								console.log(error);
+								response.sendStatus(404);
+							}
+						});
+					}
+					if (insertedFormId) {
+						response.jsonp({ commandType: 'insert', result: insertedFormId }).end();
+					} else {
+						response.jsonp({ commandType: 'update', result: res }).end();
+					}
 	            }
-	        })
-			console.log(query.sql);
+	        });
 	    });
 	//end route
 
 	router.route('/apps/:id/getAppForms')
 	    .get((req, res) => {
-	        var query = connection.query('SELECT * FROM app_forms_by_id WHERE id = ?', req.params.id, (err, rows, fields) => {
+	        var query = connection.query('SELECT * FROM app_forms_by_id WHERE appFk = ?', req.params.id, (err, rows, fields) => {
 	            if (err) {
 	                //INVALID
 	                console.error(err);
