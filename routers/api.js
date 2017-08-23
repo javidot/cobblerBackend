@@ -199,14 +199,15 @@ module.exports = (express, connection) => {
 				params = [data, tabId];
 			}
 	        var query = connection.query(sql, params, (err, res) => {
-				if (tabId === '0') {
-					insertedFormId = res.insertId;
-				}
 				console.log(query.sql);
 	            if(err){
-	                console.log(err);
+	                console.log('Error saving form: ', err);
 					response.sendStatus(404);
 	            }else{
+					if (tabId === '0') {
+						console.log('Insert response: ', res);
+						insertedFormId = res.insertId;
+					}
 					if (data.formSchema) {
 						sql = 'UPDATE app_forms SET formSchema = ? WHERE id = ?';
 						var upQuery = connection.query(sql, [JSON.stringify(data.formSchema), res.insertId], (error, result) => {
