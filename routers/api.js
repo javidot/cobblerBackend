@@ -16,8 +16,8 @@ module.exports = (express, connection) => {
 
 	    // CORS 
 	    res.header('Access-Control-Allow-Origin', '*');
-	    res.header('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE');
-	    res.header('Access-Control-Allow-Headers', '*');
+	    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+		res.header('Access-Control-Allow-Headers', '*');
 
 	    next();
 	});
