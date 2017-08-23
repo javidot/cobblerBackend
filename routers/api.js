@@ -170,7 +170,7 @@ module.exports = (express, connection) => {
 	router.route('/apps/:id/deleteForm/:tabId')
 		.delete((request, response) => {
 			var tabId = request.params.tabId
-			var query = connection.query('DELETE FROM app_forms WHERE id = ?', [tabId], (err, res) => {
+			var query = connection.query('DELETE FROM App_Forms WHERE id = ?', [tabId], (err, res) => {
 				console.log(query.sql);
 				if (err) {
 					console.log(err);
@@ -190,11 +190,11 @@ module.exports = (express, connection) => {
 			var insertedFormId;
 			var params;
 			if (tabId > 0) {
-				sql = 'UPDATE app_forms SET name = ?, updatedOn = now(), formSchema = ? WHERE id=?';
+				sql = 'UPDATE App_Forms SET name = ?, updatedOn = now(), formSchema = ? WHERE id=?';
 				params = [data.form.name, JSON.stringify(data.formSchema), data.form.id]
 			} else {
 				sql = 
-				'INSERT INTO app_forms (name, description, updatedOn, appFk, formTypeFk, ownerFk, createdOn) VALUES ("' + data.form.name + '", '
+				'INSERT INTO App_Forms (name, description, updatedOn, appFk, formTypeFk, ownerFk, createdOn) VALUES ("' + data.form.name + '", '
 					+ data.form.description + ',  now(), ' + appId + ', ' + data.form.formTypeFk + ', 2, now())';
 				params = [data, tabId];
 			}
@@ -209,7 +209,7 @@ module.exports = (express, connection) => {
 						insertedFormId = res.insertId;
 					}
 					if (data.formSchema) {
-						sql = 'UPDATE app_forms SET formSchema = ? WHERE id = ?';
+						sql = 'UPDATE App_Forms SET formSchema = ? WHERE id = ?';
 						var upQuery = connection.query(sql, [JSON.stringify(data.formSchema), res.insertId], (error, result) => {
 							console.log(upQuery.sql);
 							if (error) {
@@ -230,7 +230,7 @@ module.exports = (express, connection) => {
 
 	router.route('/apps/:id/getAppForms')
 	    .get((req, res) => {
-	        var query = connection.query('SELECT * FROM app_forms_by_id WHERE appFk = ?', req.params.id, (err, rows, fields) => {
+	        var query = connection.query('SELECT * FROM App_Forms_by_id WHERE appFk = ?', req.params.id, (err, rows, fields) => {
 	            if (err) {
 	                //INVALID
 	                console.error(err);
