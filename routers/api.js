@@ -63,7 +63,7 @@ module.exports = (express, connection) => {
 	    .post((req, response) => {
 	        var data = req.body;
 	        console.log(req.body);
-	        var query = connection.query('INSERT INTO Apps SET ?', [data], (err, result) => {
+	        var query = connection.query('INSERT INTO apps SET ?', [data], (err, result) => {
 	            if(err) {
 	                console.error(err);
 	                response.sendStatus(404);
@@ -72,7 +72,7 @@ module.exports = (express, connection) => {
 					console.log('New app id = ', newAppId);
 					var queryAddAppUsers = connection.query(
 					`
-						INSERT INTO App_Users
+						INSERT INTO app_users
 						(appFk,
 						userFk,
 						addedBy,
@@ -88,7 +88,7 @@ module.exports = (express, connection) => {
 							console.error(err);
 							response.sendStatus(404);
 						} else {
-							var getAppQuery = connection.query('SELECT * FROM Apps WHERE id = ?', newAppId, (err, rows, fields) => {
+							var getAppQuery = connection.query('SELECT * FROM apps WHERE id = ?', newAppId, (err, rows, fields) => {
 								if(err) {
 									console.error(err);
 									response.sendStatus(404);
@@ -104,7 +104,7 @@ module.exports = (express, connection) => {
 	    })
 
 	    .get((req, res) => {
-	        var query = connection.query('SELECT * FROM All_Apps', (err, rows, fields) => {
+	        var query = connection.query('SELECT * FROM all_apps', (err, rows, fields) => {
 	            if (err) {
 					console.error(err)
 					res.jsonp(err);
@@ -124,7 +124,7 @@ module.exports = (express, connection) => {
 	    })
 
 	    .get((req, res) => {
-	        var query = connection.query('SELECT * FROM Apps WHERE id=?', req.params.id, (err, rows, fields) => {
+	        var query = connection.query('SELECT * FROM apps WHERE id=?', req.params.id, (err, rows, fields) => {
 	            if (err) {
 	                //INVALID
 	                console.error(err);
@@ -143,7 +143,7 @@ module.exports = (express, connection) => {
 
 	    .put((req, res) => {
 	        var data = req.body;
-	        var query = connection.query('UPDATE Apps SET ? WHERE id=?', [data, req.params.id], (err, res) => {
+	        var query = connection.query('UPDATE apps SET ? WHERE id=?', [data, req.params.id], (err, res) => {
 	            if(err){
 	                console.log(err);
 					res.sendStatus(404);
@@ -155,7 +155,7 @@ module.exports = (express, connection) => {
 	    })
 
 	    .delete((req, res) => {
-	        var query = connection.query('DELETE FROM Apps WHERE id=? LIMIT 1', [req.params.id], (err, result) => {
+	        var query = connection.query('DELETE FROM apps WHERE id=? LIMIT 1', [req.params.id], (err, result) => {
 	            if(err){
 	                console.log(err);
 	                res.sendStatus(404);
@@ -170,7 +170,7 @@ module.exports = (express, connection) => {
 	router.route('/apps/:id/deleteForm/:tabId')
 		.delete((request, response) => {
 			var tabId = request.params.tabId
-			var query = connection.query('DELETE FROM App_Forms WHERE id = ?', [tabId], (err, res) => {
+			var query = connection.query('DELETE FROM app_forms WHERE id = ?', [tabId], (err, res) => {
 				console.log(query.sql);
 				if (err) {
 					console.log(err);
@@ -190,11 +190,11 @@ module.exports = (express, connection) => {
 			var insertedFormId;
 			var params;
 			if (tabId > 0) {
-				sql = 'UPDATE App_Forms SET name = ?, updatedOn = now(), formSchema = ? WHERE id=?';
+				sql = 'UPDATE app_forms SET name = ?, updatedOn = now(), formSchema = ? WHERE id=?';
 				params = [data.form.name, JSON.stringify(data.formSchema), data.form.id]
 			} else {
 				sql = 
-				'INSERT INTO App_Forms (name, description, updatedOn, appFk, formTypeFk, ownerFk, createdOn) VALUES ("' + data.form.name + '", '
+				'INSERT INTO app_forms (name, description, updatedOn, appFk, formTypeFk, ownerFk, createdOn) VALUES ("' + data.form.name + '", '
 					+ data.form.description + ',  now(), ' + appId + ', ' + data.form.formTypeFk + ', 2, now())';
 				params = [data, tabId];
 			}
@@ -209,7 +209,7 @@ module.exports = (express, connection) => {
 						insertedFormId = res.insertId;
 					}
 					if (data.formSchema) {
-						sql = 'UPDATE App_Forms SET formSchema = ? WHERE id = ?';
+						sql = 'UPDATE app_forms SET formSchema = ? WHERE id = ?';
 						var upQuery = connection.query(sql, [JSON.stringify(data.formSchema), res.insertId], (error, result) => {
 							console.log(upQuery.sql);
 							if (error) {
@@ -230,7 +230,7 @@ module.exports = (express, connection) => {
 
 	router.route('/apps/:id/getAppForms')
 	    .get((req, res) => {
-	        var query = connection.query('SELECT * FROM App_Forms_by_id WHERE appFk = ?', req.params.id, (err, rows, fields) => {
+	        var query = connection.query('SELECT * FROM app_forms_by_id WHERE appFk = ?', req.params.id, (err, rows, fields) => {
 	            if (err) {
 	                //INVALID
 	                console.error(err);
@@ -250,7 +250,7 @@ module.exports = (express, connection) => {
 	
 	router.route('/users/:id')
 	    .get((req, res) => {
-	        var query = connection.query('SELECT * FROM Users WHERE id = ?', req.params.id, (err, rows, fields) => {
+	        var query = connection.query('SELECT * FROM users WHERE id = ?', req.params.id, (err, rows, fields) => {
 	            if (err) {
 	                //INVALID
 	                console.error(err);
@@ -271,7 +271,7 @@ module.exports = (express, connection) => {
 	// FUNCTIONS USERS ROUTES
 	router.route('/users/:id/getApps')
 	    .get((req, res) => {
-	        var query = connection.query('SELECT * FROM Apps WHERE ownerFk=?', req.params.id, (err, rows, fields) => {
+	        var query = connection.query('SELECT * FROM apps WHERE ownerFk=?', req.params.id, (err, rows, fields) => {
 	            if (err) {
 	                //INVALID
 	                console.error(err);
@@ -291,7 +291,7 @@ module.exports = (express, connection) => {
 
 	router.route('/users/:id/getUserApps')
 	    .get((req, res) => {
-	        var query = connection.query('SELECT null as app, appFk, addedBy, addedOn, lastVisited, userStatus, role FROM UserAppsData WHERE UserAppsData.userFk = ?', req.params.id, (err, rows, fields) => {
+	        var query = connection.query('SELECT null as app, appFk, addedBy, addedOn, lastVisited, userStatus, role FROM userAppsData WHERE Userappsdata.userFk = ?', req.params.id, (err, rows, fields) => {
 	            if (err) {
 	                //INVALID
 	                console.error(err);
