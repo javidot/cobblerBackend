@@ -14,7 +14,7 @@
 // }
 
 module.exports = {
-   host     : 'aarm9w0wh48a7f.cnc53j0i9ssi.us-west-2.rds.amazonaws.com',
+   host     : 'aa1aa8b889dc6x2.cnc53j0i9ssi.us-west-2.rds.amazonaws.com:3306',
    user     : 'cobberDbAdmin',
    password : '123abc$%^',
    port     : '3306',
