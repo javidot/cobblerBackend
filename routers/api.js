@@ -195,7 +195,7 @@ module.exports = (express, connection) => {
 			} else {
 				sql = 
 				'INSERT INTO app_forms (name, description, updatedOn, appFk, formTypeFk, ownerFk, createdOn) VALUES ("' + data.form.name + '", '
-					+ data.form.description + ',  now(), ' + appId + ', ' + data.form.formTypeFk + ', 2, now())';
+					+ data.form.description + ',  now(), ' + appId + ', ' + data.form.formTypeFk + ', 3, now())';
 				params = [data, tabId];
 			}
 	        var query = connection.query(sql, params, (err, res) => {
