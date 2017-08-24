@@ -291,7 +291,7 @@ module.exports = (express, connection) => {
 
 	router.route('/users/:id/getUserApps')
 	    .get((req, res) => {
-	        var query = connection.query('SELECT null as app, appFk, addedBy, addedOn, lastVisited, userStatus, role FROM userAppsData WHERE Userappsdata.userFk = ?', req.params.id, (err, rows, fields) => {
+	        var query = connection.query('SELECT null as app, appFk, addedBy, addedOn, lastVisited, userStatus, role FROM userappsdata WHERE userappsdata.userFk = ?', req.params.id, (err, rows, fields) => {
 	            if (err) {
 	                //INVALID
 	                console.error(err);
